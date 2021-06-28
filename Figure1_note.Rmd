@@ -4,19 +4,10 @@ author: "J Brophy"
 date: '`r format(Sys.Date(), "%B %d, %Y")`'
 output:
   html_document:
-    css: lab.css
-    code_folding: hide
     highlight: tango
     theme: cerulean
     toc: yes
     toc_float: yes
-  pdf_document:
-    toc: yes
-bibliography: references.bib
-link-citations: yes
-linkcolor: red
-urlcolor: blue
-csl: vancouver-brackets.csl
 ---
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
@@ -46,7 +37,7 @@ sessionInfo()
 - Rmd
   + Reference: https://rmarkdown.rstudio.com/lesson-1.html
   + Knit
-  + Code chunk: (Mac) command+option+i / (Win) cntl+alt+i
+  + Code chunk: (Mac) command+option+i / (Win) ctrl+alt+i
 
 ## Data structure
 
@@ -61,17 +52,16 @@ Vector
 
 command+option+i / cntl+alt+i
 
-## Atomic vector
+### Atomic vector
 
-logical/integer/double/character vector
+#### logical/integer/double/character vector
 ```{r}
-1+1
 a = c(1L, 2L, 3L) #integer
 a
 typeof(a)
 mode(a)
 
-d = c(3.3, 3.14)
+d = c(3.3, 3.14) # double
 d
 typeof(d) # vvvv
 mode(d) # xxxx
@@ -80,42 +70,76 @@ b = c("ha", "you", "hello") #charcter
 b
 typeof(b)
 
+e = c(TRUE, FALSE, T, F)
+e
+typeof(e)
+```
+
+#### matrix / array
+```{r}
+
+1:8
+c(1, 2, 3, 4, 5,6,7,8)
+aMatrix <- matrix(1:8, ncol = 2, byrow = TRUE)
+aMatrix
+
+aArray <- array(1:8, dim = c(2,2,2))
+aArray
+```
+
+
+#### subvector
+```{r}
+d <- c(23, 2.5, 3.8, 9)
+d
+typeof(d)
+
+sum(d)
+sd(d)
+max(d)
+min(d)
+summary(d)
+
+d[2]
+d[3]
+
+d[c(1, 3)]
+
+aMatrix[2, 1]
+aMatrix[1, ]
+aMatrix[, 1]
+aMatrix[c(2,3), c(1,2)]
+aMatrix[6]
+aMatrix
 
 ```
 
-matrix / array
+### List
+
+#### list
 ```{r}
+l = list(3, 3.4, "a", TRUE)
+l
+typeof(l)
 
-```
-
-
-subvector
-```{r}
-
-```
-
-
-## List
-
-list
-```{r}
-aList = list(a = 1:3, 
+aList = list(a = 1:3, # a = c(1,2,3)
              b = TRUE, 
              c = list(d = "happy", 
                       e = c(1.3, 4.5, 7.83, pi)))
 aList
+
 typeof(aList)
 class(aList)
 ```
 
-sublist??
+#### sublist??
 ```{r}
-aList$a
+aList
 aList[1]
 aList["a"]
+aList$a
 aList[[1]]
 aList[["a"]]
-
 
 aList$c
 aList$c[2]
@@ -129,13 +153,15 @@ aList[3]
 aList[[3]]
 aList[[3]][2]
 #...
-
 ```
 
-data.frame (2-dim)
+#### data.frame (2-dim)
+
 - row: observation
 - col: variable
 ```{r}
+rep(1.5, times = 6)
+rev(11:16)
 aDf <- data.frame(a = rep(1.5, times = 6),
                   b = c("a", "b", "c", "d", "e", "f"),
                   c = LETTERS[1:6],
@@ -144,9 +170,11 @@ aDf <- data.frame(a = rep(1.5, times = 6),
 aDf
 typeof(aDf)
 class(aDf)
+class(aList)
+
+
 ```
-
-
+#### sub-data.frame
 ```{r}
 # [] 
 aDf[1]
@@ -169,10 +197,47 @@ aDf$e[2:3]
 ## How to use help
 
 ```{r}
-help(xxxx)
-?xxxx
-??xxxx
+d
+sum(d)
+help(sum)
+?sum
+??sum
 ```
+
+
+
+--------------------------------------------------------------------------------
+## 0628_Exercise
+
+1. 如果有空的話可以看一看 Rmarkdown 的介紹 [https://rmarkdown.rstudio.com/lesson-1.html]，或是直接上網搜尋 Rmarkdown 的其他教學。
+  
+  - 你可以嘗試 knit 這份文件看看？！是否有成功？
+
+2. 理解上方每一條 code 的語法與結果是什麼
+  
+  - 可以嘗試更改裡頭的元素，如`[1]`改成`[2]`
+  - 用 `help()` 查詢每個 function, 如 `help(c)`, `help(sum)`, `help(help)`
+  - 你能不能建立屬於自己的例子
+  
+3. 觀察 atomic vector 與 list 變數跑出來呈現上的差異。
+
+4. 在 sub-list 與 sub-data.frame 的 code chunk 中，分別用了 `[`、`[[`還有 
+`$` 這三種奇怪的符號
+  
+  - 請你仔細觀察這三個符號使用上的差異，並在下次上課時告數我你發現到什麼。
+  - 建議可以搭配 `typeof()` 觀察，例如 `typeof(aList[[3]])`。
+ 
+5. [額外補充] [輕鬆學習R語言](https://yaojenkuo.gitbooks.io/learn-r-the-easy-way/content/chapter2.html)，可以參考裡頭的 Day2-Day7
+  
+  - 這幾章剛好有提到 R 其他種類的資料型態 (type of) 以及資料結構 (structure) 或正確來說是屬性 (class)
+  - 雖然他是寫得淺顯易懂 (而且是中文)，但實際上他將資料結構用維度的方式來進行分類，我認為非常不恰當也不同意他的說法，因為它並沒有把 atomic vector 與 list 做出明顯的區分。
+  - 最正確的分類方式：[Advance R: Chapter 3](https://adv-r.hadley.nz/vectors-chap.html)
+  - 順帶一提,上面兩本書實際上都是要 Rmarkdown 寫的喔！！！
+  
+6. 如果你覺得我上課有任何建議，講太簡單、太難、太慢、太快等，都很歡迎留言告訴我，我們可以持續改進找到彼此適合的模式 😁
+--------------------------------------------------------------------------------
+
+
 
 
 ## Enter data
@@ -188,6 +253,10 @@ Rc = MACCE outcome in control (CABG) arm (Death, MI, stroke, revascularization)
 Nc = Number of subjects in control (CABG) arm    
 Ne = Number of subjects in experimental (PCI) arm     
 
+$$
+posterior = \frac{prior \times likelihood}{constant} \\
+\sum_{i = 1}^n i = \frac{n\times(n+1)}{2}
+$$
 
 ```{r results='asis', warning=FALSE, message=FALSE}
 library(knitr)
