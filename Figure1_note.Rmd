@@ -207,7 +207,7 @@ help(sum)
 
 
 --------------------------------------------------------------------------------
-## 0628_Exercise
+## 0628_Exercises
 
 1. 如果有空的話可以看一看 Rmarkdown 的介紹 [https://rmarkdown.rstudio.com/lesson-1.html]，或是直接上網搜尋 Rmarkdown 的其他教學。
   
@@ -221,7 +221,7 @@ help(sum)
   
 3. 觀察 atomic vector 與 list 變數跑出來呈現上的差異。
 
-4. 在 sub-list 與 sub-data.frame 的 code chunk 中，分別用了 `[`、`[[`還有 
+4. 在 sub-list 與 sub-data.frame 的 code chunk 中，分別用了 `[`、`[[` 還有 
 `$` 這三種奇怪的符號
   
   - 請你仔細觀察這三個符號使用上的差異，並在下次上課時告數我你發現到什麼。
@@ -238,6 +238,69 @@ help(sum)
 --------------------------------------------------------------------------------
 
 
+### assignment, replacment
+```{r}
+a1 = c(10, 11, 12)
+a2 <- c(10, 11, 12)
+a4 <- c(10, 20, 30) -> a3
+
+a1
+a2
+a3
+a4
+
+a1 == a2
+a2 == a3
+a3 == a1
+
+identical(a1, a2)
+identical(a1, a3)
+```
+
+
+```{r}
+a1[2]
+a1[2:3]
+
+a1[c(3, 1)]
+
+a1
+a1[c(3, 1)] <- c(100, 300)
+a1
+
+a1
+a3
+a1[c(3, 1)] <- a3[c(2, 3)]
+a1
+
+a3
+a3 <- rev(a3)
+a3
+```
+```{r}
+aVector <- c(a = 1, b = 2, c = 3)
+aVector
+names(aVector)
+names(aVector) <- c("q", "w", "e")
+aVector
+
+aVector["a"]
+aVector[["a"]]
+
+largerThanTwo <- aVector >= 2
+largerThanTwo
+aVector[largerThanTwo]
+aVector[c(2, 3)]
+aVector[c(F, T, T)]
+```
+```{r}
+sum(a1)
+sd(a1)
+mean(a1)
+Mode(a1) ## mode(a1)
+median(a1)
+max(a1)
+```
 
 
 ## Enter data
@@ -258,17 +321,40 @@ posterior = \frac{prior \times likelihood}{constant} \\
 \sum_{i = 1}^n i = \frac{n\times(n+1)}{2}
 $$
 
+## package
+functions and dataset
+
+dataset
+```{r}
+iris
+mtcars
+help(mtcars)
+data()
+
+data(package = "CCTpack")
+```
+
+
 ```{r results='asis', warning=FALSE, message=FALSE}
-library(knitr)
-library(coda)
-library(rjags)
+# install.packages("")
+# indtall.packages(c("", ""))
+
+library(knitr) #kable()
+#library(coda)
+#library(rjags) 
 library(kableExtra)
-library(ggplot2)
+#library(ggplot2)
 library(ggthemes)
 library(metafor)
 library(meta)
 library(tidyverse)
 
+# require(tidyverse)
+```
+
+
+
+```{r results='asis', warning=FALSE, message=FALSE}
 # mortality data entered as NOBLE, SYNTAX,  EXCEL, PRECOMBAT (leave oout these small trials Boudriot) 
 # composite endpoint for Noble = sum mortality+Mi+stroke PCI= 54+43+21=118; CABG=50+15+12=77
 Mc<-c(23, 50, 48, 89) #event in non-expose (CABG)
@@ -280,17 +366,64 @@ Pe<-c(25, 118, 67, 203) #event in expose (PCI)
 Re <- c(52, 165,130,290) #event in expose (PCI) - MACCE includes revasc
 Rc <- c(42, 110, 103, 228) #event in non-expose (CABG) - MACCE includes revasc
 
-
 temp <- data.frame(Mc=Mc,Me=Me,Pc=Pc, Pe=Pe, Rc=Rc, Re=Re, Nc=Nc, Ne=Ne)
-temp$Study <- c("PRECOMBAT", "NOBLE", "SYNTAX", "EXCEL")
-temp <- temp[c(9,1:8)] # reorder columns
+temp
 
+tem2 <- data.frame(Mc = c(23, 50, 48, 89),
+                   Nc = c(300, 592, 348, 957))
+
+temp
+temp[, 3]
+temp$Pc
+
+temp[3]
+temp["Pc"]
+
+temp$Pc <- temp$Pc * 2 
+
+temp$Study <- c("PRECOMBAT", "NOBLE", "SYNTAX", "EXCEL")
+temp
+
+t1 <- temp[9]
+t1
+t2 <- temp[1:8]
+t2
+temp2 <- cbind(t1, t2)
+temp2
+temp
+temp3 <- rbind(temp, temp)
+temp3
+
+temp <- temp[c(9,1:8)] # reorder columns
+temp
+```
+
+
+```{r results='asis', warning=FALSE, message=FALSE}
 kable(temp, caption="Outcomes at 5 years") %>%
   kable_styling(bootstrap_options = "striped", full_width = F)
 
- write.csv(temp, file = "data1.csv", row.names = FALSE)
-
+write.csv(temp, file = "data/data1.csv")
 ```
+
+
+```{r}
+# wroking dir = "C:/Users/Nick Lin/Desktop/Brophy_2020"
+getwd()
+
+# absolute path: "C:/Users/...../Brophy_2020/Figure1.rmd"
+# relative path: "Figure1.rmd"
+```
+
+
+```{r}
+temp2 <- read.csv("data/data1.csv")
+temp2 <- read.csv("C:/Users/Nick Lin/Desktop/Brophy_2020/data/data1.csv")
+temp2
+```
+
+
+
 
 ## EXCEL data alone
 
@@ -304,14 +437,136 @@ Ex_p_e <- temp[4,5]
 Ex_n_c <- temp[4,8]
 Ex_n_e <- temp[4,9]
 
-paste("Conirming that hot coded data ", (203/948) - (176/957), "is = to data read from file, ", (Ex_p_e/Ex_n_e) - (Ex_p_c/Ex_n_c))
+paste0("Conirming that hot coded data ", (203/948) - (176/957), "is = to data read from file, ", (Ex_p_e/Ex_n_e) - (Ex_p_c/Ex_n_c))
+```
 
+### Paste 的用法
+
+```{r}
+paste("a", "b") # 之間會多空格，因為 sep = " "
+paste0("a", "b") # 等同於 paste("a", "b", sep = "")
+paste("a", "b", sep = "/")
+```
+
+
+## Distribution in R 
+
+### Four types of functions
+
+- *d*：機率質量/密度函數 (mass / density)  
+- *p*：累積機率函數 (probability)  
+- *q*：反累積機率函數 (quantile)  
+- *r*：根據某機率分配，隨機 (random)產生之數值 
+
+### Example 1: Normal Distribution
+
+  * R預設是$\mu=0,\sigma=1$的常態分配，即標準常態分配 (standard normal distribution)
+  1. `dnorm(x, mean = 0, sd = 1, log = F)`：計算$f(x)=\frac{1}{\sigma\sqrt{2\pi}}e^{-\frac{(x-\mu)^2}{2\sigma^2}},x \in \mathbb{R}$
+  2. `pnorm(x, mean = 0, sd = 1, lower.tail = T, log.p = F)`：計算$F_X(x) =  \int_{-\infty}^x \frac{1}{\sigma\sqrt{2\pi}}e^{-\frac{(x-\mu)^2}{2\sigma^2}} dx$
+  3. `qnorm(p, mean = 0, sd = 1, lower.tail = T, log.p = F)`：計算$F_X^{-1}(x)$
+  4. `rnorm(n, mean = 0, sd = 1)`：從*N*(`mean`, `sd`)隨機產生*n*筆資料
+
+![](figure/normal_distribution.svg)
+![](https://r-coder.com/wp-content/uploads/2020/10/dnorm-pnorm-qnorm-functions.png)
+
+自己檢查看看吧
+```{r}
+normal_sample <- rnorm(1000)
+hist(normal_sample) # plot histogram
+
+# If X ~ Normal(0, 1)，
+dnorm(-1, mean = 0, sd = 1) # 求 f(X = -1) 在 X = -1 這點的"機率密度"
+pnorm(-1, mean = 0, sd = 1) # 求 F(X = -1) = \int_{-infty}^{-1} f(X = -1) dx = Pr(X <= -1) 求 X 小於等於 -1 的累績機率
+qnorm(0.1586553, mean = 0, sd = 1)
+qnorm(pnrom(-1, mean = 0, sd = 1)) == -1 # TRUE, 互為反函數
+
+
+# 高中統機常說的一個標準差內、兩個標準差內、三個標準差內
+prob_1sd <- pnorm(1) - pnorm(-1); prob_1sd
+prob_2sd <- pnorm(2) - pnorm(-2); prob_2sd
+prob_3sd <- pnorm(3) - pnorm(-3); prob_3sd
+```
+
+### Example2: Normal Distribution
+
+1. `dbinom(x, n, θ, log = F)`：計算$p(x)=C^n_xθ^x(1-θ)^{n-x},x=0,1,...,n$  
+2. `pbinom(x, n, θ, lower.tail = T, log.p = F)`：計算$P(X \leq x)$  
+3. `qbinom(p, n, θ, lower.tail = T, log.p = F)`：計算$P(X \leq x)$的反函數  
+4. `rbinom(m, n, θ)`：從*Bin*(*n*, *θ*)隨機產生*m*筆資料
+
+其他 R 內建的各種分配 `help(distribution)`
+
+
+--------------------------------------------------------------------------------
+## 0701_Exercises
+
+0. 補 0628_Exercises
+
+1. 理論上對 list 用 `[` 不會改變 list 的型態，而使用 `[[` 或 `$` 則會是取 list 裡的元素出來，因此型態可能會改變。我們說過 data.frame 本質上是 list，然而 data.frame 卻有一個奇怪的機制，請你檢查
+
+```{r}
+temp
+
+temp[1, 1]
+temp[, 1] # Notice!!
+temp[, c(1, 3)] # Notice!!
+temp[1, ]
+temp[1]
+temp["Study"]
+
+temp[[1]]
+temp[["Study"]]
+temp$Study
+```
+  
+  - 在 `[`, `[[` 和 `$` 中那些結果是會保持 data.frame 的形式，那些不會
+  - 有沒有令你感到意外的選項 (抱歉，我剛剛自己上課時也搞混了，這是 data.frame 的一個缺點)  
+  - 試試看這個 `temp[, 1, drop = FALSE]` 與 `temp[, 1]` 相同嗎？ 
+  - [額外補充：data.frame vs. tibble](https://adv-r.hadley.nz/vectors-chap.html#tibble)
+  
+2. Distribution in R 小節中介紹了 ddist(), pdist(), qdist() 與 rdist() 這四類跟分配有關的函數
+  
+  - 我後來有多打一些筆記在上頭，請你自己執行看看結果是否符合你的預期
+  - 請你自己練習一種分配，並改改看不同參數下的結果變化
+
+3. R 在生產表格，特別是在 html 文件時，有各式各樣專門的套件們
+
+  - 可以參考這篇文章： [How to Make Beautiful Tables in R](https://rfortherestofus.com/2019/11/how-to-make-beautiful-tables-in-r/)
+  - 如果你想要產生 latex 和 pdf 文章時，我會建議使用 kable + kableExtra 這兩個套件
+  - 如果你想要產生 html 文章並含有互動式的表格，我會建議使用 DT 套件，例如
+
+```{r}
+# install.packages("DT")
+DT::datatable(iris)
+```
+
+4. data.frame 對於 R 使用者來說是一個很重要的資料格式，但我們上課的時間有限，我無法一一介紹哪有哪些特別的語法，所以請你參考下列文章，如果有不會的或看不懂語法在跟我說
+
+  - [Create, Access, Modify and Delete Data Frame in R](https://www.datamentor.io/r-programming/data-frame/)
+  - [R 列表變數與 Data Frames](https://blog.gtwang.org/r/r-lists-and-data-frames/)
+
+5. 絕對與相對路徑是電腦找尋檔案時很重要的概念，因此不限於 R 本身，幾乎每個程式語言都會碰到。你可以想像絕對路徑就是地址，例如台大的絕對路徑：台北市大安區羅斯福路1號；而相對路徑則會是說，台大在我的宿舍(目前工作目錄)右邊兩個街區
+  - 請你看完這部影片 [Absolute and Relative Paths](https://www.youtube.com/watch?v=ephId3mYu9o)
+  - 請問 `.`, `..` 和 `~` 分別代表什麼意思
+  - `getwd())` 和 `setwd())` 分別代表什麼意思 (請查 help)
+--------------------------------------------------------------------------------
+
+
+
+
+
+
+
+
+```{r}
 set.seed(1234)
 #Prior is beta(1,1)
 # sampling 100,000 random variables from posterior
 post_Ex_p_c <- rbeta(100000, Ex_p_c + 1, Ex_n_c - Ex_p_c + 1 )
 post_Ex_p_e <- rbeta(100000, Ex_p_e + 1, Ex_n_e - Ex_p_e + 1 )
+```
 
+```{r}
 # calculting posterior of differences
 post_Ex_p_diff <- post_Ex_p_e - post_Ex_p_c
 paste("EXCEL data alone - Differences in MACE between PCI & CABG")
@@ -329,7 +584,10 @@ paste("With normal approximation, EXCEL data alone - Probability PCI worse than 
 
 Ex_diff_df <- data.frame(post_Ex_p_diff)
 Ex_diff_df$post_Ex_p_diff <- Ex_diff_df$post_Ex_p_diff*100
+```
 
+
+```{r}
 # plot showing good normal approximation to binomial histogram
 ggplot(Ex_diff_df, aes(x= post_Ex_p_diff)) + 
     geom_histogram(aes(y=..density..), bins=100, colour="black", fill="white") +
