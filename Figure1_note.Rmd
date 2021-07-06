@@ -230,9 +230,9 @@ help(sum)
 5. [額外補充] [輕鬆學習R語言](https://yaojenkuo.gitbooks.io/learn-r-the-easy-way/content/chapter2.html)，可以參考裡頭的 Day2-Day7
   
   - 這幾章剛好有提到 R 其他種類的資料型態 (type of) 以及資料結構 (structure) 或正確來說是屬性 (class)
-  - 雖然他是寫得淺顯易懂 (而且是中文)，但實際上他將資料結構用維度的方式來進行分類，我認為非常不恰當也不同意他的說法，因為它並沒有把 atomic vector 與 list 做出明顯的區分。
+  - 雖然他是寫得淺顯易懂 (而且是中文)，但實際上他將資料結構用維度的方式來進行分類，我不完全同意這種方式(但大部份 R 語言介紹書都是者樣寫)，因為它並沒有把 atomic vector 與 list 做出明顯的區分。
   - 最正確的分類方式：[Advance R: Chapter 3](https://adv-r.hadley.nz/vectors-chap.html)
-  - 順帶一提,上面兩本書實際上都是要 Rmarkdown 寫的喔！！！
+  - 順帶一題,上面兩本書實際上都是由 Rmarkdown 寫的喔！！！
   
 6. 如果你覺得我上課有任何建議，講太簡單、太難、太慢、太快等，都很歡迎留言告訴我，我們可以持續改進找到彼此適合的模式 😁
 --------------------------------------------------------------------------------
@@ -431,6 +431,7 @@ temp2
 Bayesian probability difference based on non-informative prior
 
 ```{r}
+temp
 # Excel data
 Ex_p_c <- temp[4,4]
 Ex_p_e <- temp[4,5]
@@ -504,11 +505,13 @@ prob_3sd <- pnorm(3) - pnorm(-3); prob_3sd
 
 1. 理論上對 list 用 `[` 不會改變 list 的型態，而使用 `[[` 或 `$` 則會是取 list 裡的元素出來，因此型態可能會改變。我們說過 data.frame 本質上是 list，然而 data.frame 卻有一個奇怪的機制，請你檢查
 
+tidy data.frame
 ```{r}
 temp
+View(temp)
 
-temp[1, 1]
-temp[, 1] # Notice!!
+temp[1, 1] %>% typeof()
+temp[, 1, drop = FALSE] # Notice!!
 temp[, c(1, 3)] # Notice!!
 temp[1, ]
 temp[1]
@@ -549,14 +552,35 @@ DT::datatable(iris)
   - 請你看完這部影片 [Absolute and Relative Paths](https://www.youtube.com/watch?v=ephId3mYu9o)
   - 請問 `.`, `..` 和 `~` 分別代表什麼意思
   - `getwd())` 和 `setwd())` 分別代表什麼意思 (請查 help)
+  
+6. 預習 Doing Bayesian Data Analysis (Kruschke, 2014) Ch.6
 --------------------------------------------------------------------------------
 
 
 
+[額外補充]
+
+tibble
+```{r}
+temp_tibble <- tibble(temp)
+temp_tibble
+
+temp_tibble[, 1]
+temp_tibble[2, 2]
+```
+這一部分下次再說
+```{r}
+getwd()
+setwd()
+dir()
+```
+
+```{r}
+sprintf()
+```
 
 
-
-
+↓↓↓↓↓ 這邊開始你應該可以自記先看看 ↓↓↓↓↓
 
 ```{r}
 set.seed(1234)
@@ -571,7 +595,19 @@ post_Ex_p_e <- rbeta(100000, Ex_p_e + 1, Ex_n_e - Ex_p_e + 1 )
 post_Ex_p_diff <- post_Ex_p_e - post_Ex_p_c
 paste("EXCEL data alone - Differences in MACE between PCI & CABG")
 quantile(post_Ex_p_diff, probs = c(0.025, .5, 0.975))
+```
 
+
+```{r}
+bayestestR::hdi(post_Ex_p_diff)
+```
+```{r}
+hist(post_Ex_p_diff) # 畫直方圖
+plot(density(post_Ex_p_c)) # 畫分配密度圖
+summary(post_Ex_p_c) # 基本統計
+```
+
+```{r}
 # probabilities >0 and >1
 paste("EXCEL data alone - Probability PCI worse than CABG = ", sum(post_Ex_p_diff*100 >0)/100000)
 paste("EXCEL data alone - Probability PCI worse than CABG by >1% = ", sum(post_Ex_p_diff*100 >1)/100000)
@@ -585,6 +621,31 @@ paste("With normal approximation, EXCEL data alone - Probability PCI worse than 
 Ex_diff_df <- data.frame(post_Ex_p_diff)
 Ex_diff_df$post_Ex_p_diff <- Ex_diff_df$post_Ex_p_diff*100
 ```
+
+↑↑↑↑↑ 這邊以上你應該可以自己先看看 ↑↑↑↑↑
+
+
+--------------------------------------------------------------------------------
+## 0706_Exercises
+
+0. 補看 0701_Exercises 第 5 題。
+
+1. 將上方 code 得先自行看過一遍，可參考今天上課的講義 (我把手寫筆記輸出成 .pdf 放在 note 資料夾中)。
+
+2. 如果你有時間的話，我會建議你把下面三個影片看完，他是動畫所以看起來會很有fu~
+
+- [Binomial distributions | Probabilities of probabilities, part 1](https://www.youtube.com/watch?v=8idr1WZ1A7Q&list=RDCMUCYO_jab_esuFRV4b17AJtAw&index=1)
+- [Bayes theorem](https://www.youtube.com/watch?v=HZGCoVF3YvM&list=RDCMUCYO_jab_esuFRV4b17AJtAw&index=2) 
+- [Why Bayes rule is nicer with odds](https://www.youtube.com/watch?v=lG4VkPoG3ko&list=RDCMUCYO_jab_esuFRV4b17AJtAw&index=4)
+
+3. [額外補充] 都不小心講到 maximum likelihood estimation，可以參考這個影片 [StatQuest: Maximum Likelihood, clearly explained!!!](https://www.youtube.com/watch?v=XepXtl9YKwc)
+
+--------------------------------------------------------------------------------
+
+
+
+
+
 
 
 ```{r}
