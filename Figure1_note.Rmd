@@ -200,8 +200,8 @@ aDf$e[2:3]
 d
 sum(d)
 help(sum)
-?sum
-??sum
+# ?sum
+# ??sum
 ```
 
 
@@ -431,7 +431,11 @@ temp2
 Bayesian probability difference based on non-informative prior
 
 ```{r}
+temp <- data.frame(Mc=Mc,Me=Me,Pc=Pc, Pe=Pe, Rc=Rc, Re=Re, Nc=Nc, Ne=Ne)
+temp$Study <- c("PRECOMBAT", "NOBLE", "SYNTAX", "EXCEL")
+temp <- temp[c(9,1:8)] # reorder columns
 temp
+
 # Excel data
 Ex_p_c <- temp[4,4]
 Ex_p_e <- temp[4,5]
@@ -601,6 +605,7 @@ quantile(post_Ex_p_diff, probs = c(0.025, .5, 0.975))
 ```{r}
 bayestestR::hdi(post_Ex_p_diff)
 ```
+
 ```{r}
 hist(post_Ex_p_diff) # 畫直方圖
 plot(density(post_Ex_p_c)) # 畫分配密度圖
@@ -642,10 +647,46 @@ Ex_diff_df$post_Ex_p_diff <- Ex_diff_df$post_Ex_p_diff*100
 
 --------------------------------------------------------------------------------
 
+### Sprintf() vs. paste()
+
+```{r}
+paste0("Conirming that hot coded data ", (203/948) - (176/957), "is = to data read from file, ", (Ex_p_e/Ex_n_e) - (Ex_p_c/Ex_n_c))
 
 
+sprintf("Conirming that hot coded data %.2f is = to data read from file, %.2f",
+        (203/948) - (176/957), (Ex_p_e/Ex_n_e) - (Ex_p_c/Ex_n_c))
+
+Name = "Nick"
+Age = 25L
+Height = 173.568234
+
+sprintf("Name = %s, Age = %d, and Height = %.2f cm", Name, Age, Height)
+
+sprintf("%f", pi)
+sprintf("%.3f", pi)
+sprintf("%1.0f", pi)
+sprintf("%5.1f", pi)
+sprintf("%05.1f", pi)
+sprintf("%+f", pi)
+sprintf("% f", pi)
+sprintf("%-10f", pi) # left justified
+sprintf("%e", pi)
+sprintf("%E", pi)
+sprintf("%g", pi)
+sprintf("%g",   1e6 * pi) # -> exponential
+sprintf("%.9g", 1e6 * pi) # -> "fixed"
+sprintf("%G", 1e-6 * pi)
+
+```
 
 
+# ggplot2
+
+參考講義：
+
+- ggplot > data_manipulation_and_plot_in_R-master > tidyverse_intro.html
+
+- ggplot > useR-2021-ggplot2-tutorial-main > docs > index.html
 
 
 ```{r}
@@ -657,8 +698,6 @@ ggplot(Ex_diff_df, aes(x= post_Ex_p_diff)) +
     scale_y_continuous(name = "Density") +
     ggtitle("EXCEL Probability density for risk difference in  primary outcome\n (with superimposed Gaussian kernal density estimate )") +
     theme_economist()
-
-
 ```
      
 The calculated differrence in event ratios are based on the ratios of events to total populations in each arm. They do not include time to event as reported in the orginal NEJM publication and are consequentlty slightly different than the reported event rates.
