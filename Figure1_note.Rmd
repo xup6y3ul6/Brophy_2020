@@ -688,16 +688,27 @@ sprintf("%G", 1e-6 * pi)
 
 - ggplot > useR-2021-ggplot2-tutorial-main > docs > index.html
 
+```{r}
+a <- 1:10
+sum(sqrt(a))
+
+a %>% 
+  sqrt() %>% # ctrl(command)+shift+m 
+  sum()
+
+```
 
 ```{r}
 # plot showing good normal approximation to binomial histogram
 ggplot(Ex_diff_df, aes(x= post_Ex_p_diff)) + 
-    geom_histogram(aes(y=..density..), bins=100, colour="black", fill="white") +
+    geom_histogram(aes(y=..density..), bins=100, colour="black", fill="white")+
     geom_density(alpha=.2, fill="#FF6666") +
     scale_x_continuous(name = "Primary outcome difference (PCI - CABG)") +
     scale_y_continuous(name = "Density") +
-    ggtitle("EXCEL Probability density for risk difference in  primary outcome\n (with superimposed Gaussian kernal density estimate )") +
-    theme_economist()
+    ggtitle("EXCEL Probability density for risk difference in  primary outcome\n (with superimposed Gaussian kernal density estimate )")+
+    theme_minimal()
+
+GGthemes
 ```
      
 The calculated differrence in event ratios are based on the ratios of events to total populations in each arm. They do not include time to event as reported in the orginal NEJM publication and are consequentlty slightly different than the reported event rates.
@@ -706,8 +717,13 @@ The calculated differrence in event ratios are based on the ratios of events to 
 #### Figure 1a
 
 ```{r}
-fig1a <- ggplot(data.frame(x = c(-3, 8)), aes(x = x)) +
-        stat_function(fun = dnorm, args = list(mean(post_Ex_p_diff*100), sd(post_Ex_p_diff*100)), colour = "deeppink") +
+df <- data.frame(x = c(-3, 8))
+df
+ggplot(df, aes(x = x)) +
+        stat_function(fun = dnorm, 
+                      args = list(mean = mean(post_Ex_p_diff*100),
+                                  sd = sd(post_Ex_p_diff*100)),
+                      colour = "deeppink") +
         scale_x_continuous(name = "Primary outcome difference (PCI - CABG) -> PCI worse") +
         scale_y_continuous(name = "Density") +
         ggtitle("EXCEL Probability Density Function \n (primary outcome risk difference )") +
@@ -716,8 +732,18 @@ fig1a <- ggplot(data.frame(x = c(-3, 8)), aes(x = x)) +
         annotate("text", label = "Grey AUC = probability (87%) \n PCI > CABG outcome by > 1%", x = 0.5, y = .18, color = "black") +
          annotate("text", label = "Grey + yellow AUC = probability (95%) \n PCI > CABG outcome", x = 0, y = .1, color = "black") +
         theme_economist() +
-        stat_function(fun = dnorm, args = list(mean(post_Ex_p_diff*100), sd(post_Ex_p_diff*100)), xlim = c(1,8), geom = "area", alpha = 0.2) +
-        stat_function(fun = dnorm, args = list(mean(post_Ex_p_diff*100), sd(post_Ex_p_diff*100)), xlim = c(0,1), geom = "area", alpha = 0.2, fill = "yellow") 
+        stat_function(fun = dnorm, 
+                      args = list(mean(post_Ex_p_diff*100),
+                                  sd(post_Ex_p_diff*100)), 
+                      xlim = c(1,8), 
+                      geom = "area", 
+                      alpha = 0.2) +
+        stat_function(fun = dnorm, 
+                      args = list(mean(post_Ex_p_diff*100), sd(post_Ex_p_diff*100)), 
+                      xlim = c(0,1), 
+                      geom = "area", 
+                      alpha = 0.2, 
+                      fill = "yellow") 
 fig1a
 ```
 
@@ -740,6 +766,8 @@ post_Ex_m_e <- rbeta(10000, Ex_m_e + 1, Ex_n_e - Ex_m_e + 1 )
 # calculting posterior of differences
 post_Ex_m_diff <- post_Ex_m_e - post_Ex_m_c
 quantile(post_Ex_m_diff, probs = c(0.025, .5, 0.975))
+bayetestR::hdi(post_Ex_m_diff)
+
 
 1-pnorm(0, mean(post_Ex_m_diff*100), sd(post_Ex_m_diff*100))
 1-pnorm(1, mean(post_Ex_m_diff*100), sd(post_Ex_m_diff*100))
@@ -837,7 +865,7 @@ for (i in 0:8){
 ## Combining graphs
 
 ```{r}
-
+ggsave(fig1a, "fig1a.jpg")
 pdf("fig1.pdf")
 plot(fig1a)
 plot(fig1b)

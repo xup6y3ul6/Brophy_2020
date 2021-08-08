@@ -5,6 +5,8 @@
 |     [v]     | 2021/06/28 | 20:00-21:00 | Figure1_note.rmd <br /> note\0628_note.pdf |
 |     [v]     | 2021/07/01 | 20:00-21:00 | Figure1_note.rmd |
 |     [v]     | 2021/07/06 | 20:00-21:30 | Figure1_note.rmd <br />  note\0706_frequency_statistic.pdf <br /> note\0706_bayes_theorm.pdf <br />  note\0706_bin-beta_model.pdf |
+|     [v]     | 2021/07/29 | 20:00-21:30 | Figure1_note.rmd |
+
 
 ## jama_intmed_code
 This is the code for the figures and calculations contained in the JAMA Int Med article     
